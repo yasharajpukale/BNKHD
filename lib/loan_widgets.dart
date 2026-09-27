@@ -80,20 +80,31 @@ class LoanSubmittedHeader extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 22),
-          Wrap(
-            alignment: WrapAlignment.center,
-            spacing: 16,
-            runSpacing: 10,
-            children: [
-              HeaderActionButton(
-                label: 'Share',
-                onTap: () => _toast(context, 'Share'),
-              ),
-              HeaderActionButton(
-                label: 'Download',
-                onTap: () => _toast(context, 'Download'),
-              ),
-            ],
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final sideBySide = constraints.maxWidth >= 430;
+              final buttonWidth = sideBySide ? 196.0 : null;
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Flexible(
+                    child: HeaderActionButton(
+                      label: 'Share',
+                      width: buttonWidth,
+                      onTap: () => _toast(context, 'Share'),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Flexible(
+                    child: HeaderActionButton(
+                      label: 'Download',
+                      width: buttonWidth,
+                      onTap: () => _toast(context, 'Download'),
+                    ),
+                  ),
+                ],
+              );
+            },
           ),
         ],
       ),
@@ -106,10 +117,12 @@ class HeaderActionButton extends StatelessWidget {
     super.key,
     required this.label,
     required this.onTap,
+    this.width = 196,
   });
 
   final String label;
   final VoidCallback onTap;
+  final double? width;
 
   @override
   Widget build(BuildContext context) {
@@ -118,7 +131,7 @@ class HeaderActionButton extends StatelessWidget {
       child: GestureDetector(
         onTap: onTap,
         child: Container(
-          width: 196,
+          width: width,
           height: 46,
           alignment: Alignment.center,
           decoration: BoxDecoration(
@@ -374,31 +387,46 @@ class MetricBlock extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: const TextStyle(
-            color: kLabel,
-            fontSize: 13,
-            fontWeight: FontWeight.w500,
+        FittedBox(
+          fit: BoxFit.scaleDown,
+          alignment: Alignment.centerLeft,
+          child: Text(
+            label,
+            softWrap: false,
+            style: const TextStyle(
+              color: kLabel,
+              fontSize: 13,
+              fontWeight: FontWeight.w500,
+            ),
           ),
         ),
         const SizedBox(height: 6),
-        Text(
-          value,
-          style: const TextStyle(
-            color: kInk,
-            fontSize: 22,
-            fontWeight: FontWeight.w800,
-            height: 1.1,
+        FittedBox(
+          fit: BoxFit.scaleDown,
+          alignment: Alignment.centerLeft,
+          child: Text(
+            value,
+            softWrap: false,
+            style: const TextStyle(
+              color: kInk,
+              fontSize: 22,
+              fontWeight: FontWeight.w800,
+              height: 1.1,
+            ),
           ),
         ),
         const SizedBox(height: 4),
-        Text(
-          caption,
-          style: const TextStyle(
-            color: kLabel,
-            fontSize: 13.5,
-            fontWeight: FontWeight.w400,
+        FittedBox(
+          fit: BoxFit.scaleDown,
+          alignment: Alignment.centerLeft,
+          child: Text(
+            caption,
+            softWrap: false,
+            style: const TextStyle(
+              color: kLabel,
+              fontSize: 13.5,
+              fontWeight: FontWeight.w400,
+            ),
           ),
         ),
       ],

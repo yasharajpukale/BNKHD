@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'BHK1.dart';
 import 'BHK2.dart';
-import 'loan_bloc.dart';
+import 'cutomer.dart';
 
 void main() {
   runApp(const FlutterApp());
@@ -21,51 +20,78 @@ class FlutterApp extends StatelessWidget {
         useMaterial3: true,
         scaffoldBackgroundColor: const Color(0xFFF3F1F6),
       ),
-      home: BlocProvider(
-        create: (_) => LoanBloc(),
-        child: const HomeLoanScreens(),
-      ),
+      home: const HomeLoanScreens(),
     );
   }
 }
 
-class HomeLoanScreens extends StatelessWidget {
+class HomeLoanScreens extends StatefulWidget {
   const HomeLoanScreens({super.key});
 
   @override
+  State<HomeLoanScreens> createState() => _HomeLoanScreensState();
+}
+
+class _HomeLoanScreensState extends State<HomeLoanScreens> {
+  int _index = 0;
+
+  @override
   Widget build(BuildContext context) {
-    return BlocBuilder<LoanBloc, LoanState>(
-      builder: (context, state) {
-        final bloc = context.read<LoanBloc>();
+    final screens = IndexedStack(
+      index: _index,
+      children: const [
+        BHK1(),
+        BHK2(),
+        Cutomer(),
+      ],
+    );
+    final chips = Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        _ScreenChip(
+          label: 'BHK1',
+          selected: _index == 0,
+          onTap: () => setState(() => _index = 0),
+        ),
+        const SizedBox(width: 8),
+        _ScreenChip(
+          label: 'BHK2',
+          selected: _index == 1,
+          onTap: () => setState(() => _index = 1),
+        ),
+        const SizedBox(width: 8),
+        _ScreenChip(
+          label: 'Customer',
+          selected: _index == 2,
+          onTap: () => setState(() => _index = 2),
+        ),
+      ],
+    );
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (constraints.maxWidth < 720) {
+          return Column(
+            children: [
+              Expanded(child: screens),
+              ColoredBox(
+                color: const Color(0xFF0C0B2B),
+                child: SafeArea(
+                  top: false,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    child: chips,
+                  ),
+                ),
+              ),
+            ],
+          );
+        }
         return Stack(
           fit: StackFit.expand,
           children: [
-            IndexedStack(
-              index: state.screen == ActiveLoanScreen.bhk1 ? 0 : 1,
-              children: const [
-                BHK1(),
-                BHK2(),
-              ],
-            ),
-            Positioned(
-              top: 10,
-              right: 16,
-              child: Row(
-                children: [
-                  _ScreenChip(
-                    label: 'BHK1',
-                    selected: state.screen == ActiveLoanScreen.bhk1,
-                    onTap: () => bloc.add(const ShowBhk1()),
-                  ),
-                  const SizedBox(width: 8),
-                  _ScreenChip(
-                    label: 'BHK2',
-                    selected: state.screen == ActiveLoanScreen.bhk2,
-                    onTap: () => bloc.add(const ShowBhk2()),
-                  ),
-                ],
-              ),
-            ),
+            screens,
+            Positioned(top: 12, right: 16, child: chips),
           ],
         );
       },
